@@ -198,7 +198,7 @@ Item {
                     NumberAnimation {
                         target: imgShade
                         property: "scale"
-                        duration: 500
+                        duration: 400
                         easing.type: Easing.InBack
                     }
                     NumberAnimation {

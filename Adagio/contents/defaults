@@ -1,23 +1,23 @@
 [kdeglobals][KDE]
-widgetStyle=breeze
+widgetStyle=
 
 [kdeglobals][General]
-ColorScheme=Breeze
+ColorScheme=
 
 [kdeglobals][Icons]
-Theme=breeze
+Theme=
 
 [plasmarc][Theme]
-name=default
+name=
 
 [kcminputrc][Mouse]
-cursorTheme=breeze_cursors
+cursorTheme=
 
 [kwinrc][WindowSwitcher]
-LayoutName=org.kde.breeze.desktop
+LayoutName=
 
 [kwinrc][DesktopSwitcher]
-LayoutName=org.kde.breeze.desktop
+LayoutName=
 
 [kwinrc][org.kde.kdecoration2]
-library=org.kde.breeze
+library=

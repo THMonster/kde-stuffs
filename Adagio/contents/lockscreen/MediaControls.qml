@@ -25,8 +25,118 @@ import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 
 Item {
+    id: mediaControl
+    state: lockScreenRoot.uiVisible ? "mcon" : "mcoff"
     visible: mpris2Source.hasPlayer
-    implicitHeight: controlsRow.height + controlsRow.y + 100
+    Layout.alignment: Qt.AlignHCenter
+    implicitHeight: controlsRow.height + controlsRow.y
+    states: [
+        State {
+            name: "mcon"
+
+            /* PropertyChanges { */
+            /*     target: mediaControl */
+            /*     y: 0 */
+            /* } */
+
+            PropertyChanges {
+                target: mediaControl
+                opacity: 1
+            }
+        },
+        State {
+            name: "mcoff"
+
+            /* PropertyChanges { */
+            /*     target: mediaControl */
+            /*     y: 40 */
+            /* } */
+
+            PropertyChanges {
+                target: mediaControl
+                opacity: 0
+            }
+        }
+    ]
+
+    transitions: [
+        Transition {
+            from: "mcoff"
+            to: "mcon"
+            /* PathAnimation { */
+            /*     target: controlsRow */
+            /*     easing.type: Easing.OutQuart */
+            /*     duration: 550 */
+            /*     path: Path { */
+            /*         startY: controlsRow.y+10 */
+            /*         PathLine {} */
+            /*     } */
+            /* } */
+            SequentialAnimation {
+                PauseAnimation {
+                    duration: 450
+                }
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: mediaControl
+                        property: "y"
+                        duration: 500
+                        from: 40
+                        to: 0
+                        /* easing.type: Easing.InOutQuad */
+                        easing.type: Easing.OutQuart
+                    }
+                    NumberAnimation {
+                        target: mediaControl
+                        property: "opacity"
+                        duration: 500
+                        /* easing.type: Easing.InOutQuad */
+                        easing.type: Easing.OutQuart
+
+                    }
+                }
+            }
+        },
+        Transition {
+            from: "mcon"
+            to: "mcoff"
+            /* PathAnimation { */
+            /*     target: controlsRow */
+            /*     easing.type: Easing.OutQuart */
+            /*     duration: 500 */
+            /*     path: Path { */
+            /*         /\* startX: passwordBox.x; startY: passwordBox.y+10 *\/ */
+            /*         PathLine {y: controlsRow.y+10} */
+            /*     } */
+            /* } */
+            SequentialAnimation {
+                PauseAnimation {
+                    duration: 450
+                }
+
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: mediaControl
+                        property: "y"
+                        duration: 500
+                        from: 0
+                        to: -40
+                        /* easing.type: Easing.InOutQuad */
+                        easing.type: Easing.OutQuart
+
+                    }
+                    NumberAnimation {
+                        target: mediaControl
+                        property: "opacity"
+                        duration: 500
+                        /* easing.type: Easing.InOutQuad */
+                        easing.type: Easing.OutQuart
+
+                    }
+                }
+            }
+        }
+    ]
 
     RowLayout {
         id: controlsRow
@@ -40,75 +150,6 @@ Item {
         spacing: 0
 
         enabled: mpris2Source.canControl
-        states: [
-            State {
-                name: "mcon"
-                PropertyChanges {
-                    target: controlsRow
-                    y: 0
-                }
-            },
-            State {
-                name: "mcoff"
-                PropertyChanges {
-                    target: controlsRow
-                    y: 10
-                }
-            }
-        ]
-
-        transitions: [
-            Transition {
-                from: "mcoff"
-                to: "mcon"
-                ParallelAnimation {
-
-                    /* PathAnimation { */
-                    /*     target: controlsRow */
-                    /*     easing.type: Easing.OutQuart */
-                    /*     duration: 550 */
-                    /*     path: Path { */
-                    /*         startY: controlsRow.y+10 */
-                    /*         PathLine {} */
-                    /*     } */
-                    /* } */
-
-                    NumberAnimation {
-                        target: controlsRow
-                        property: "y"
-                        duration: 500
-                        /* easing.type: Easing.InOutQuad */
-                        easing.type: Easing.OutQuart
-                    }
-
-                }
-            },
-            Transition {
-                from: "mcon"
-                to: "mcoff"
-                ParallelAnimation {
-
-                    /* PathAnimation { */
-                    /*     target: controlsRow */
-                    /*     easing.type: Easing.OutQuart */
-                    /*     duration: 500 */
-                    /*     path: Path { */
-                    /*         /\* startX: passwordBox.x; startY: passwordBox.y+10 *\/ */
-                    /*         PathLine {y: controlsRow.y+10} */
-                    /*     } */
-                    /* } */
-
-                    NumberAnimation {
-                        target: controlsRow
-                        property: "y"
-                        duration: 500
-                        /* easing.type: Easing.InOutQuad */
-                        easing.type: Easing.OutQuart
-
-                    }
-                }
-            }
-        ]
 
 
         PlasmaCore.DataSource {

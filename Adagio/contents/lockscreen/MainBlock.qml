@@ -57,16 +57,20 @@ SessionManagementScreen {
         Layout.alignment: Qt.AlignHCenter
         /* Layout.fillWidth: true */
         /* Layout.rightMargin: 50 */
-        /* Layout.leftMargin: 10 */
-        /* Layout.preferredWidth: {parent.width / 2} */
+        /* Layout.alignment: Qt.AlignCenter */
+        /* Layout.alignment: Qt.AlignRight */
+        /* Layout.leftMargin: units.gridUnit * 2 */
+        Layout.preferredWidth: units.gridUnit * 12
+        /* x: units.gridUnit * 1.5 */
 
         /* anchors { */
         /*     horizontalCenter: parent.horizontalCenter */
         /* } */
 
+        state: lockScreenRoot.uiVisible ? "on" : "off"
         placeholderText: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Password")
         focus: true
-        opacity: 0.6
+        /* opacity: 0.8 */
         echoMode: TextInput.Password
         inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
         enabled: !authenticator.graceLocked
@@ -84,13 +88,123 @@ SessionManagementScreen {
             /* passwordCharacter: config.PasswordFieldCharacter == "" ? "●" : config.PasswordFieldCharacter */
             background: Rectangle {
                 radius: 3
-                implicitWidth: mainBlock.width * 0.13
-                implicitHeight: mainBlock.height * 0.033
+                /* implicitWidth: mainBlock.width * 0.13 */
+                /* implicitWidth: units.gridUnit * 12 */
+                implicitHeight: units.gridUnit * 1.5
                 border.color: "white"
                 border.width: 1
                 /* color: passwordFieldOutlined ? "transparent" : "white" */
             }
         }
+
+        states: [
+            State {
+                name: "on"
+
+                PropertyChanges {
+                    target: passwordBox
+                    opacity: 1
+                }
+
+                /* PropertyChanges { */
+                /*     target: passwordBox */
+                /*     y: 0 */
+                /* } */
+
+            },
+            State {
+                name: "off"
+                PropertyChanges {
+                    target: passwordBox
+                    opacity: 0
+                }
+
+                /* PropertyChanges { */
+                /*     target: passwordBox */
+                /*     y: 40 */
+                /* } */
+
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: "*"
+                to: "on"
+
+                /* PathAnimation { */
+                /*     target: passwordBox */
+                /*     easing.type: Easing.OutQuart */
+                /*     duration: 500 */
+                /*     path: Path { */
+                /*         startX: units.gridUnit * 1.5; startY: passwordBox.y+10 */
+                /*         PathLine {} */
+                /*     } */
+                /* } */
+
+
+                SequentialAnimation {
+                    PauseAnimation {
+                        duration: 350
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: passwordBox
+                            property: "y"
+                            duration: 500
+                            from: 40
+                            to: 0
+                            /* easing.type: Easing.InOutQuad */
+                            easing.type: Easing.OutQuart
+                        }
+                        NumberAnimation {
+                            target: passwordBox
+                            property: "opacity"
+                            duration: 500
+                            /* easing.type: Easing.InOutQuad */
+                            easing.type: Easing.OutQuart
+                        }
+                    }
+                }
+            },
+            Transition {
+                from: "*"
+                to: "off"
+
+                /* PathAnimation { */
+                /*     target: passwordBox */
+                /*     easing.type: Easing.OutQuart */
+                /*     duration: 500 */
+                /*     path: Path { */
+                /*         /\* startX: passwordBox.x; startY: passwordBox.y+10 *\/ */
+                /*         PathLine {x: units.gridUnit * 1.5; y: passwordBox.y+10} */
+                /*     } */
+                /* } */
+
+                SequentialAnimation {
+                    PauseAnimation {
+                        duration: 350
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: passwordBox
+                            property: "y"
+                            duration: 500
+                            from: 0
+                            to: -40
+                            /* easing.type: Easing.InOutQuad */
+                            easing.type: Easing.OutQuart
+                        }
+                        NumberAnimation {
+                            target: passwordBox
+                            property: "opacity"
+                            duration: 500
+                            easing.type: Easing.OutQuart
+                        }
+                    }
+                }
+            }
+        ]
 
         //if empty and left or right is pressed change selection in user switch
         //this cannot be in keys.onLeftPressed as then it doesn't reach the password box
@@ -128,12 +242,14 @@ SessionManagementScreen {
         source: "../components/artwork/login.svgz"
         smooth: true
         sourceSize: Qt.size(passwordBox.height, passwordBox.height)
+
         anchors {
             left: passwordBox.right
             verticalCenter: passwordBox.verticalCenter
         }
-        anchors.leftMargin: 8
-        visible: opacity > 0
+
+        /* anchors.leftMargin: 8 */
+        /* visible: opacity > 0 */
         opacity: 0
         MouseArea {
             anchors.fill: parent

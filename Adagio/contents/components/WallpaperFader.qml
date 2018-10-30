@@ -38,14 +38,21 @@ Item {
     property real factor: 0
     readonly property bool lightBackground: Math.max(PlasmaCore.ColorScope.backgroundColor.r, PlasmaCore.ColorScope.backgroundColor.g, PlasmaCore.ColorScope.backgroundColor.b) > 0.5
 
-    Behavior on factor {
-        NumberAnimation {
-            target: wallpaperFader
-            property: "factor"
-            duration: 1000
-            easing.type: Easing.InOutQuad
-        }
-    }
+    /* Behavior on factor { */
+    /*     SequentialAnimation { */
+    /*         PauseAnimation { */
+    /*             duration: 400 */
+    /*         } */
+    /*         NumberAnimation { */
+    /*             target: wallpaperFader */
+    /*             property: "factor" */
+    /*             duration: 500 */
+    /*             easing.type: Easing.Linear */
+    /*             /\* easing.type: Easing.OutQuart *\/ */
+    /*         } */
+    /*     } */
+    /* } */
+
     FastBlur {
         id: wallpaperBlur
         anchors.fill: parent
@@ -104,10 +111,12 @@ Item {
     states: [
         State {
             name: "on"
-            PropertyChanges {
-                target: mainStack
-                opacity: 1
-            }
+
+            /* PropertyChanges { */
+            /*     target: mainStack */
+            /*     opacity: 1 */
+            /* } */
+
             PropertyChanges {
                 target: footer
                 opacity: 1
@@ -116,17 +125,15 @@ Item {
                 target: wallpaperFader
                 factor: 0.8
             }
-            PropertyChanges {
-                target: clock.shadow
-                opacity: 0
-            }
         },
         State {
             name: "off"
-            PropertyChanges {
-                target: mainStack
-                opacity: 0
-            }
+
+            /* PropertyChanges { */
+            /*     target: mainStack */
+            /*     opacity: 0 */
+            /* } */
+
             PropertyChanges {
                 target: footer
                 opacity: 0
@@ -134,10 +141,6 @@ Item {
             PropertyChanges {
                 target: wallpaperFader
                 factor: 0
-            }
-            PropertyChanges {
-                target: clock.shadow
-                opacity: 1
             }
         }
     ]
@@ -147,16 +150,27 @@ Item {
             to: "on"
             //Note: can't use animators as they don't play well with parallelanimations
             ParallelAnimation {
+
+                /* NumberAnimation { */
+                /*     target: mainStack */
+                /*     property: "opacity" */
+                /*     /\* duration: units.longDuration *\/ */
+                /*     duration: 500 */
+                /*     /\* easing.type: Easing.InOutQuad *\/ */
+                /*     /\* easing.type: Easing.Bezier *\/ */
+                /*     /\* easing.bezierCurve: [0.88, 0, 0.86, 0.54, 1, 1] *\/ */
+                /* } */
                 NumberAnimation {
-                    target: mainStack
-                    property: "opacity"
-                    duration: units.longDuration
-                    easing.type: Easing.InOutQuad
+                    target: wallpaperFader
+                    property: "factor"
+                    duration: 500
+                    /* easing.type: Easing.InOutQuad */
                 }
+
                 NumberAnimation {
                     target: footer
                     property: "opacity"
-                    duration: units.longDuration
+                    duration: 500
                     easing.type: Easing.InOutQuad
                 }
             }
@@ -165,11 +179,24 @@ Item {
             from: "on"
             to: "off"
             ParallelAnimation {
-                NumberAnimation {
-                    target: mainStack
-                    property: "opacity"
-                    duration: 500
-                    easing.type: Easing.InOutQuad
+
+                /* NumberAnimation { */
+                /*     target: mainStack */
+                /*     property: "opacity" */
+                /*     duration: 500 */
+                /*     /\* easing.type: Easing.InOutQuad *\/ */
+                /*     /\* easing.type: Easing.InQuart *\/ */
+                /* } */
+                SequentialAnimation {
+                    PauseAnimation {
+                        duration: 400
+                    }
+                    NumberAnimation {
+                        target: wallpaperFader
+                        property: "factor"
+                        duration: 500
+                        /* easing.type: Easing.InOutQuad */
+                    }
                 }
                 NumberAnimation {
                     target: footer

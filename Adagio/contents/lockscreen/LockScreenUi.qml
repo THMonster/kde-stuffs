@@ -202,14 +202,14 @@ PlasmaCore.ColorScope {
                     target: clock
                     property: "y"
                     easing.type: Easing.OutQuart
-                    from: (parent.height - clock.height - units.gridUnit + 10)
+                    from: (parent.height - clock.height - units.gridUnit + 40)
                     to: (parent.height - clock.height - units.gridUnit)
-                    duration: 700
+                    duration: 1000
                 }
                 NumberAnimation {
                     target: clock
                     property: "opacity"
-                    duration: 700
+                    duration: 1000
                     from: 0
                     to: 1
                     easing.type: Easing.OutQuart
@@ -247,22 +247,27 @@ PlasmaCore.ColorScope {
                     /*     duration: 500 */
                     /*     easing.type: Easing.OutQuart */
                     /* } */
-
-                    ParallelAnimation {
-                        PathAnimation {
-                            target: clock
-                            easing.type: Easing.OutQuart
-                            duration: 500
-                            path: Path {
-                                startX: clock.x; startY: (parent.height - clock.height - units.gridUnit + 10)
-                                PathLine {x: clock.x; y: (parent.height - clock.height - units.gridUnit)}
-                            }
+                    SequentialAnimation {
+                        PauseAnimation {
+                            duration: 400
                         }
-                        NumberAnimation {
-                            target: clock
-                            property: "opacity"
-                            duration: 500
-                            easing.type: Easing.OutQuart
+
+                        ParallelAnimation {
+                            PathAnimation {
+                                target: clock
+                                easing.type: Easing.OutQuart
+                                duration: 500
+                                path: Path {
+                                    startX: clock.x; startY: (parent.height - clock.height - units.gridUnit + 10)
+                                    PathLine {x: clock.x; y: (parent.height - clock.height - units.gridUnit)}
+                                }
+                            }
+                            NumberAnimation {
+                                target: clock
+                                property: "opacity"
+                                duration: 500
+                                easing.type: Easing.OutQuart
+                            }
                         }
                     }
                 },
@@ -355,33 +360,61 @@ PlasmaCore.ColorScope {
 
                 actionItems: [
                     ActionButton {
+                        id: swButton
+                        state: lockScreenRoot.uiVisible ? "swon" : "swoff"
                         text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Switch User")
                         iconSource: "system-switch-user"
                         onClicked: mainStack.push(switchSessionPage)
                         // the current session isn't listed in the model, hence a check for greater than zero, not one
                         visible: (sessionsModel.count > 0 || sessionsModel.canStartNewSession) && sessionsModel.canSwitchUser
+
+                        states: [
+                            State {
+                                name: "swon"
+                                PropertyChanges {
+                                    target: swButton
+                                    opacity: 1
+                                }
+                            },
+                            State {
+                                name: "swoff"
+                                PropertyChanges {
+                                    target: swButton
+                                    opacity: 0
+                                }
+                            }
+                        ]
+
+                        transitions: [
+                            Transition {
+                                from: "swon"
+                                to: "swoff"
+                                NumberAnimation {
+                                    target: swButton
+                                    property: "opacity"
+                                    duration: 500
+                                    easing.type: Easing.InOutQuad
+                                }
+                            },
+                            Transition {
+                                from: "swoff"
+                                to: "swon"
+                                NumberAnimation {
+                                    target: swButton
+                                    property: "opacity"
+                                    duration: 500
+                                    easing.type: Easing.InOutQuad
+                                }
+                            }
+                        ]
                     }
                 ]
 
                 Loader {
-                    id: mc_loader
                     Layout.fillWidth: true
                     Layout.preferredHeight: item ? item.implicitHeight : 0
                     active: config.showMediaControls
                     source: "MediaControls.qml"
-
-                    /* Component.onCompleted: ParallelAnimation { */
-                    /*     PropertyAnimation { */
-                    /*         /\* id: clockLaunchAnimation; *\/ */
-                    /*         target: mc_loader */
-                    /*         property: "y" */
-                    /*         easing.type: Easing.OutQuart */
-                    /*         from: 100 */
-                    /*         to: 300 */
-                    /*         duration: 700 */
-                    /*     } */
-                    /* } */
-
                 }
             }
 

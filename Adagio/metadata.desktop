@@ -1,0 +1,15 @@
+[Desktop Entry]
+Comment=Adagio ma non troppo e molto espressivo
+Name=Adadio
+Name[zh_CN]=柔板
+
+X-KDE-ServiceTypes=Plasma/LookAndFeel
+X-KDE-ParentApp=
+X-KDE-PluginInfo-Author=IsoaSFlus
+X-KDE-PluginInfo-Category=
+X-KDE-PluginInfo-Email=me@isoasflus.me
+X-KDE-PluginInfo-License=GPLv3
+X-KDE-PluginInfo-Name=Adagio
+X-KDE-PluginInfo-Version=2.0
+X-KDE-PluginInfo-Website=
+X-Plasma-MainScript=
