@@ -52,57 +52,18 @@ SessionManagementScreen {
         loginRequest(password);
     }
 
-    PlasmaComponents.TextField {
-        id: passwordBox
-        Layout.alignment: Qt.AlignHCenter
-        /* Layout.fillWidth: true */
-        /* Layout.rightMargin: 50 */
-        /* Layout.alignment: Qt.AlignCenter */
-        /* Layout.alignment: Qt.AlignRight */
-        /* Layout.leftMargin: units.gridUnit * 2 */
-        Layout.preferredWidth: units.gridUnit * 12
-        /* x: units.gridUnit * 1.5 */
-
-        /* anchors { */
-        /*     horizontalCenter: parent.horizontalCenter */
-        /* } */
-
+    RowLayout {
+        id: pwRow
         state: lockScreenRoot.uiVisible ? "on" : "off"
-        placeholderText: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Password")
-        focus: true
-        /* opacity: 0.8 */
-        echoMode: TextInput.Password
-        inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
-        enabled: !authenticator.graceLocked
-        revealPasswordButtonShown: true
-
-        onAccepted: {
-            if (lockScreenUiVisible) {
-                startLogin();
-            }
-        }
-
-        style: TextFieldStyle {
-            /* textColor: passwordFieldOutlined ? "white" : "black" */
-            /* placeholderTextColor: passwordFieldOutlined ? "white" : "black" */
-            /* passwordCharacter: config.PasswordFieldCharacter == "" ? "●" : config.PasswordFieldCharacter */
-            background: Rectangle {
-                radius: 3
-                /* implicitWidth: mainBlock.width * 0.13 */
-                /* implicitWidth: units.gridUnit * 12 */
-                implicitHeight: units.gridUnit * 1.5
-                border.color: "white"
-                border.width: 1
-                /* color: passwordFieldOutlined ? "transparent" : "white" */
-            }
-        }
+        Layout.fillWidth: true
+        Layout.leftMargin: units.gridUnit * 2
 
         states: [
             State {
                 name: "on"
 
                 PropertyChanges {
-                    target: passwordBox
+                    target: pwRow
                     opacity: 1
                 }
 
@@ -115,7 +76,7 @@ SessionManagementScreen {
             State {
                 name: "off"
                 PropertyChanges {
-                    target: passwordBox
+                    target: pwRow
                     opacity: 0
                 }
 
@@ -149,7 +110,7 @@ SessionManagementScreen {
                     }
                     ParallelAnimation {
                         NumberAnimation {
-                            target: passwordBox
+                            target: pwRow
                             property: "y"
                             duration: 500
                             from: 40
@@ -158,7 +119,7 @@ SessionManagementScreen {
                             easing.type: Easing.OutQuart
                         }
                         NumberAnimation {
-                            target: passwordBox
+                            target: pwRow
                             property: "opacity"
                             duration: 500
                             /* easing.type: Easing.InOutQuad */
@@ -187,7 +148,7 @@ SessionManagementScreen {
                     }
                     ParallelAnimation {
                         NumberAnimation {
-                            target: passwordBox
+                            target: pwRow
                             property: "y"
                             duration: 500
                             from: 0
@@ -196,7 +157,7 @@ SessionManagementScreen {
                             easing.type: Easing.OutQuart
                         }
                         NumberAnimation {
-                            target: passwordBox
+                            target: pwRow
                             property: "opacity"
                             duration: 500
                             easing.type: Easing.OutQuart
@@ -206,68 +167,113 @@ SessionManagementScreen {
             }
         ]
 
-        //if empty and left or right is pressed change selection in user switch
-        //this cannot be in keys.onLeftPressed as then it doesn't reach the password box
-        Keys.onPressed: {
-            if (event.key == Qt.Key_Left && !text) {
-                userList.decrementCurrentIndex();
-                event.accepted = true
+        PlasmaComponents.TextField {
+            id: passwordBox
+            Layout.alignment: Qt.AlignHCenter
+            /* Layout.fillWidth: true */
+            /* Layout.rightMargin: 50 */
+            /* Layout.alignment: Qt.AlignCenter */
+            /* Layout.alignment: Qt.AlignRight */
+            /* Layout.leftMargin: units.gridUnit * 2 */
+            Layout.preferredWidth: units.gridUnit * 12
+            /* x: units.gridUnit * 1.5 */
+
+            /* anchors { */
+            /*     horizontalCenter: parent.horizontalCenter */
+            /* } */
+
+            placeholderText: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Password")
+            focus: true
+            /* opacity: 0.8 */
+            echoMode: TextInput.Password
+            inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            enabled: !authenticator.graceLocked
+            revealPasswordButtonShown: true
+
+            onAccepted: {
+                if (lockScreenUiVisible) {
+                    startLogin();
+                }
             }
-            if (event.key == Qt.Key_Right && !text) {
-                userList.incrementCurrentIndex();
-                event.accepted = true
+
+            style: TextFieldStyle {
+                /* textColor: passwordFieldOutlined ? "white" : "black" */
+                /* placeholderTextColor: passwordFieldOutlined ? "white" : "black" */
+                /* passwordCharacter: config.PasswordFieldCharacter == "" ? "●" : config.PasswordFieldCharacter */
+                background: Rectangle {
+                    radius: 3
+                    /* implicitWidth: mainBlock.width * 0.13 */
+                    /* implicitWidth: units.gridUnit * 12 */
+                    implicitHeight: units.gridUnit * 1.5
+                    border.color: "white"
+                    border.width: 1
+                    /* color: passwordFieldOutlined ? "transparent" : "white" */
+                }
+            }
+
+            //if empty and left or right is pressed change selection in user switch
+            //this cannot be in keys.onLeftPressed as then it doesn't reach the password box
+            Keys.onPressed: {
+                if (event.key == Qt.Key_Left && !text) {
+                    userList.decrementCurrentIndex();
+                    event.accepted = true
+                }
+                if (event.key == Qt.Key_Right && !text) {
+                    userList.incrementCurrentIndex();
+                    event.accepted = true
+                }
+            }
+
+            Keys.onReleased: {
+                if (loginButton.opacity == 0 && length > 0) {
+                    showLoginButton.start()
+                }
+                if (loginButton.opacity > 0 && length == 0) {
+                    hideLoginButton.start()
+                }
+            }
+
+            Connections {
+                target: root
+                onClearPassword: {
+                    passwordBox.forceActiveFocus()
+                    passwordBox.selectAll()
+                }
             }
         }
 
-        Keys.onReleased: {
-            if (loginButton.opacity == 0 && length > 0) {
-                showLoginButton.start()
+        Image {
+            id: loginButton
+            source: "../components/artwork/login.svgz"
+            smooth: true
+            sourceSize: Qt.size(passwordBox.height, passwordBox.height)
+
+            /* anchors { */
+            /*     left: passwordBox.right */
+            /*     verticalCenter: passwordBox.verticalCenter */
+            /* } */
+
+            /* anchors.leftMargin: 8 */
+            visible: opacity > 0
+            opacity: 0
+            MouseArea {
+                anchors.fill: parent
+                onClicked: startLogin();
             }
-            if (loginButton.opacity > 0 && length == 0) {
-                hideLoginButton.start()
+            PropertyAnimation {
+                id: showLoginButton
+                target: loginButton
+                properties: "opacity"
+                to: 0.75
+                duration: 100
             }
-        }
-
-        Connections {
-            target: root
-            onClearPassword: {
-                passwordBox.forceActiveFocus()
-                passwordBox.selectAll()
+            PropertyAnimation {
+                id: hideLoginButton
+                target: loginButton
+                properties: "opacity"
+                to: 0
+                duration: 80
             }
-        }
-    }
-
-    Image {
-        id: loginButton
-        source: "../components/artwork/login.svgz"
-        smooth: true
-        sourceSize: Qt.size(passwordBox.height, passwordBox.height)
-
-        anchors {
-            left: passwordBox.right
-            verticalCenter: passwordBox.verticalCenter
-        }
-
-        /* anchors.leftMargin: 8 */
-        /* visible: opacity > 0 */
-        opacity: 0
-        MouseArea {
-            anchors.fill: parent
-            onClicked: startLogin();
-        }
-        PropertyAnimation {
-            id: showLoginButton
-            target: loginButton
-            properties: "opacity"
-            to: 0.75
-            duration: 100
-        }
-        PropertyAnimation {
-            id: hideLoginButton
-            target: loginButton
-            properties: "opacity"
-            to: 0
-            duration: 80
         }
     }
 
