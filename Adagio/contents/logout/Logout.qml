@@ -32,7 +32,8 @@ import org.kde.plasma.private.sessions 2.0
 
 PlasmaCore.ColorScope {
     id: root
-    colorGroup: PlasmaCore.Theme.ComplementaryColorGroup
+    /* colorGroup: PlasmaCore.Theme.ComplementaryColorGroup */
+    colorGroup: PlasmaCore.Theme.ViewColorGroup
     height: screenGeometry.height
     width: screenGeometry.width
 
@@ -110,7 +111,8 @@ PlasmaCore.ColorScope {
         anchors.fill: parent
         //use "black" because this is intended to look like a general darkening of the scene. a dark gray as normal background would just look too "washed out"
         color: root.isLightColor(PlasmaCore.ColorScope.backgroundColor) ? PlasmaCore.ColorScope.backgroundColor : "black"
-        opacity: 0.2
+        /* color: "#ffffff" */
+        opacity: 0.6
     }
     MouseArea {
         anchors.fill: parent

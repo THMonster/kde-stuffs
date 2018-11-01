@@ -19,8 +19,10 @@
 
 import QtQuick 2.2
 import QtQuick.Layouts 1.2
+import QtGraphicalEffects 1.0
 
 import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.plasma.components 2.0 as PlasmaComponents
 
 import "../components"
 import "timer.js" as AutoTriggerTimer
@@ -30,7 +32,8 @@ ActionButton {
     onClicked: action()
     Layout.alignment: Qt.AlignTop
     iconSize: units.iconSizes.huge
-    opacity: activeFocus || containsMouse ? 1 : 0.8
+    opacity: activeFocus || containsMouse ? 1 : 0.5
+    /* opacity: 1 */
     font.underline: false
     Behavior on opacity {
         OpacityAnimator {
@@ -40,3 +43,4 @@ ActionButton {
     }
     Keys.onPressed: AutoTriggerTimer.cancelAutoTrigger();
 }
+

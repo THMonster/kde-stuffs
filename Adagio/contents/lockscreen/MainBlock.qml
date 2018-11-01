@@ -22,6 +22,7 @@ import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.4
+import QtGraphicalEffects 1.0
 
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
@@ -64,7 +65,7 @@ SessionManagementScreen {
 
                 PropertyChanges {
                     target: pwRow
-                    opacity: 1
+                    opacity: 0.9
                 }
 
                 /* PropertyChanges { */
@@ -169,13 +170,14 @@ SessionManagementScreen {
 
         PlasmaComponents.TextField {
             id: passwordBox
-            Layout.alignment: Qt.AlignHCenter
+            /* Layout.alignment: Qt.AlignHCenter */
             /* Layout.fillWidth: true */
             /* Layout.rightMargin: 50 */
             /* Layout.alignment: Qt.AlignCenter */
             /* Layout.alignment: Qt.AlignRight */
             /* Layout.leftMargin: units.gridUnit * 2 */
             Layout.preferredWidth: units.gridUnit * 12
+            /* Layout.preferredHeight: units.gridUnit * 1.5 */
             /* x: units.gridUnit * 1.5 */
 
             /* anchors { */
@@ -200,15 +202,17 @@ SessionManagementScreen {
                 /* textColor: passwordFieldOutlined ? "white" : "black" */
                 /* placeholderTextColor: passwordFieldOutlined ? "white" : "black" */
                 /* passwordCharacter: config.PasswordFieldCharacter == "" ? "●" : config.PasswordFieldCharacter */
+
                 background: Rectangle {
                     radius: 3
                     /* implicitWidth: mainBlock.width * 0.13 */
                     /* implicitWidth: units.gridUnit * 12 */
                     implicitHeight: units.gridUnit * 1.5
-                    border.color: "white"
-                    border.width: 1
+                    /* border.color: "white" */
+                    /* border.width: 1 */
                     /* color: passwordFieldOutlined ? "transparent" : "white" */
                 }
+
             }
 
             //if empty and left or right is pressed change selection in user switch
@@ -247,6 +251,8 @@ SessionManagementScreen {
             source: "../components/artwork/login.svgz"
             smooth: true
             sourceSize: Qt.size(passwordBox.height, passwordBox.height)
+
+            /* color: black */
 
             /* anchors { */
             /*     left: passwordBox.right */
