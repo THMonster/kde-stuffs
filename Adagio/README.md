@@ -15,7 +15,7 @@ And set the look-and-feel to `Adagio`
 
 ## Acknowledge
 
-This look-and-feel is based KDE's official Breeze and highly inspired by SDDM theme [kde-plasma-chili](https://github.com/MarianArlt/kde-plasma-chili) and GNOME's new lockscreen(although it doesn't exist yet :P).
+This look-and-feel is based on KDE's official Breeze and highly inspired by SDDM theme [kde-plasma-chili](https://github.com/MarianArlt/kde-plasma-chili) and GNOME's new lockscreen(although it doesn't exist yet :P).
 
 ## About the name
 
