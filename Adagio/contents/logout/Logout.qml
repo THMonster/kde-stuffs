@@ -190,7 +190,7 @@ PlasmaCore.ColorScope {
             LogoutButton {
                 id: shutdownButton
                 iconSource: "system-shutdown"
-                text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Shutdown")
+                text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Shut Down")
                 action: root.haltRequested
                 KeyNavigation.left: rebootButton
                 KeyNavigation.right: logoutButton
