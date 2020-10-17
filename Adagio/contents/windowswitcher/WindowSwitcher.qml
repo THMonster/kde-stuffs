@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
 import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.components 2.0 as PlasmaComponents
+import org.kde.plasma.components 2.0 as PlasmaComponents // for Highlight
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.kwin 2.0 as KWin
 
@@ -128,17 +128,18 @@ KWin.Switcher {
 
                 highlight: PlasmaComponents.Highlight {}
             }
-        }
-        /*
-        * Key navigation on outer item for two reasons:
-        * @li we have to emit the change signal
-        * @li on multiple invocation it does not work on the list view. Focus seems to be lost.
-        **/
-        Keys.onPressed: {
-            if (event.key === Qt.Key_Up) {
-                icons.decrementCurrentIndex();
-            } else if (event.key === Qt.Key_Down) {
-                icons.incrementCurrentIndex();
+
+            /*
+            * Key navigation on outer item for two reasons:
+            * @li we have to emit the change signal
+            * @li on multiple invocation it does not work on the list view. Focus seems to be lost.
+            **/
+            Keys.onPressed: {
+                if (event.key === Qt.Key_Up) {
+                    icons.decrementCurrentIndex();
+                } else if (event.key === Qt.Key_Down) {
+                    icons.incrementCurrentIndex();
+                }
             }
         }
     }

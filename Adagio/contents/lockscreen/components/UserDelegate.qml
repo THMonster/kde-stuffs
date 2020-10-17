@@ -31,6 +31,7 @@ Item {
 
     property bool isCurrent: true
 
+    readonly property var m: model
     property string name
     property string userName
     property string avatarPath
@@ -52,6 +53,7 @@ Item {
 
     // Draw a translucent background circle under the user picture
     Rectangle {
+        id: faceBG
         anchors.centerIn: imageSource
         width: imageSource.width - 2 // Subtract to prevent fringing
         height: width
@@ -71,7 +73,7 @@ Item {
         Behavior on width { 
             PropertyAnimation {
                 from: faceSize
-                duration: units.longDuration;
+                duration: units.longDuration * 2;
             }
         }
         width: isCurrent ? faceSize : faceSize - units.largeSpacing
@@ -97,6 +99,8 @@ Item {
     }
 
     ShaderEffect {
+        id: imgShade
+        state: lockScreenRoot.uiVisible ? "on" : "off"
         anchors {
             bottom: usernameDelegate.top
             bottomMargin: units.largeSpacing
@@ -156,6 +160,89 @@ Item {
                             gl_FragColor = gl_FragColor * qt_Opacity;
                     }
         "
+         states: [
+            State {
+                name: "on"
+                PropertyChanges {
+                    target: imgShade
+                    scale: 1
+                }
+                PropertyChanges {
+                    target: faceBG
+                    scale: 1
+                }
+                PropertyChanges {
+                    target: usernameDelegate
+                    opacity: 1
+                }
+            },
+            State {
+                name: "off"
+                PropertyChanges {
+                    target: imgShade
+                    scale: 0
+                }
+                PropertyChanges {
+                    target: faceBG
+                    scale: 0
+                }
+                PropertyChanges {
+                    target: usernameDelegate
+                    opacity: 0
+                }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: "off"
+                to: "on"
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: imgShade 
+                        property: "scale"
+                        duration: 500
+                        easing.type: Easing.OutBack
+                    }
+                    NumberAnimation {
+                        target: faceBG 
+                        property: "scale"
+                        duration: 500
+                        easing.type: Easing.OutBack
+                    }
+                    NumberAnimation {
+                        target: usernameDelegate
+                        property: "opacity"
+                        duration: 500
+                        easing.type: Easing.InOutQuad
+                    }
+                }
+            },
+            Transition {
+                from: "on"
+                to: "off"
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: imgShade
+                        property: "scale"
+                        duration: 400
+                        easing.type: Easing.InBack
+                    }
+                    NumberAnimation {
+                        target: faceBG
+                        property: "scale"
+                        duration: 400
+                        easing.type: Easing.InBack
+                    }
+                    NumberAnimation {
+                        target: usernameDelegate
+                        property: "opacity"
+                        duration: 500
+                        easing.type: Easing.InOutQuad
+                    }
+                }
+            }
+        ]
     }
 
     PlasmaComponents3.Label {

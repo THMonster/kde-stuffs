@@ -26,7 +26,7 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents
 
 import org.kde.plasma.private.sessions 2.0
-import "../components"
+import "./components"
 
 PlasmaCore.ColorScope {
 

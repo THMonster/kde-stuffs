@@ -18,6 +18,7 @@
 import QtQuick 2.0
 import QtQuick.Window 2.2
 import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.extras 2.0 as PlasmaExtra
 
 PlasmaCore.Dialog {
@@ -31,8 +32,6 @@ PlasmaCore.Dialog {
     // This is either a text or a number, if showingProgress is set to true,
     // the number will be used as a value for the progress bar
     property var osdValue
-    // Maximum percent value
-    property int osdMaxValue: 100
     // Icon name to display
     property string icon
     // Set to true if the value is meant for progress bar,

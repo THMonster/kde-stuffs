@@ -20,14 +20,15 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.1 as QQC
 
-import org.kde.plasma.components 3.0 as PlasmaComponents3
+import org.kde.plasma.components 2.0 as PlasmaComponents
 
 import org.kde.plasma.workspace.keyboardlayout 1.0
 
-PlasmaComponents3.ToolButton {
+PlasmaComponents.ToolButton {
     id: kbLayoutButton
 
-    icon.name: "input-keyboard"
+    iconName: "input-keyboard"
+    implicitWidth: minimumWidth
     text: layout.currentLayoutDisplayName
 
     Accessible.name: i18ndc("plasma_lookandfeel_org.kde.lookandfeel", "Button to change keyboard layout", "Switch layout")

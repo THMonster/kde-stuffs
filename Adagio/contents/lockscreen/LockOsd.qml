@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import QtQuick 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
-import "../osd"
+import "./osd"
 
 PlasmaCore.FrameSvgItem {
     id: osd

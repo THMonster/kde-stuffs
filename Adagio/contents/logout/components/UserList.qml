@@ -18,14 +18,13 @@
  */
 
 import QtQuick 2.2
-import org.kde.plasma.core 2.0 as PlasmaCore
 
 ListView {
     id: view
     readonly property string selectedUser: currentItem ? currentItem.userName : ""
-    readonly property int userItemWidth: units.gridUnit * 8
-    readonly property int userItemHeight: units.gridUnit * 8
-    property int fontSize: PlasmaCore.Theme.defaultFont.pointSize + 2
+    property int userItemWidth: units.gridUnit * 8
+    /* readonly property int userItemHeight: units.gridUnit * 8 */
+    property int userItemHeight: userItemWidth
 
     implicitHeight: userItemHeight
 
@@ -43,13 +42,9 @@ ListView {
     preferredHighlightBegin: width/2 - userItemWidth/2
     preferredHighlightEnd: preferredHighlightBegin
 
-    // Disable flicking if we only have on user (like on the lockscreen)
-    interactive: count > 1
-
     delegate: UserDelegate {
         avatarPath: model.icon || ""
         iconSource: model.iconName || "user-identity"
-        fontSize: view.fontSize
 
         name: {
             var displayName = model.realName || model.name

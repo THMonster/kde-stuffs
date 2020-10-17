@@ -20,7 +20,7 @@
 
 import QtQuick 2.8
 import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.components 3.0 as PlasmaComponents3
+import org.kde.plasma.components 2.0 as PlasmaComponents
 
 Item {
     id: wrapper
@@ -31,16 +31,17 @@ Item {
 
     property bool isCurrent: true
 
+    readonly property var m: model
     property string name
     property string userName
     property string avatarPath
     property string iconSource
     property bool constrainText: true
     property alias nameFontSize: usernameDelegate.font.pointSize
-    property int fontSize: PlasmaCore.Theme.defaultFont.pointSize + 2
+    property int fontSize: config.fontSize
     signal clicked()
 
-    property real faceSize: units.gridUnit * 7
+    property real faceSize: Math.min(width, height - usernameDelegate.height - units.smallSpacing)
 
     opacity: isCurrent ? 1.0 : 0.5
 
@@ -52,6 +53,7 @@ Item {
 
     // Draw a translucent background circle under the user picture
     Rectangle {
+        id: faceBG
         anchors.centerIn: imageSource
         width: imageSource.width - 2 // Subtract to prevent fringing
         height: width
@@ -71,7 +73,7 @@ Item {
         Behavior on width { 
             PropertyAnimation {
                 from: faceSize
-                duration: units.longDuration;
+                duration: units.longDuration * 2;
             }
         }
         width: isCurrent ? faceSize : faceSize - units.largeSpacing
@@ -97,6 +99,8 @@ Item {
     }
 
     ShaderEffect {
+        id: imgShade
+        state: lockScreenRoot.uiVisible ? "on" : "off"
         anchors {
             bottom: usernameDelegate.top
             bottomMargin: units.largeSpacing
@@ -117,7 +121,7 @@ Item {
 
         property var colorBorder: PlasmaCore.ColorScope.textColor
 
-        //draw a circle with an antialiased border
+        //draw a circle with an antialised border
         //innerRadius = size of the inner circle with contents
         //outerRadius = size of the border
         //blend = area to blend between two colours
@@ -156,15 +160,99 @@ Item {
                             gl_FragColor = gl_FragColor * qt_Opacity;
                     }
         "
+         states: [
+            State {
+                name: "on"
+                PropertyChanges {
+                    target: imgShade
+                    scale: 1
+                }
+                PropertyChanges {
+                    target: faceBG
+                    scale: 1
+                }
+                PropertyChanges {
+                    target: usernameDelegate
+                    opacity: 1
+                }
+            },
+            State {
+                name: "off"
+                PropertyChanges {
+                    target: imgShade
+                    scale: 0
+                }
+                PropertyChanges {
+                    target: faceBG
+                    scale: 0
+                }
+                PropertyChanges {
+                    target: usernameDelegate
+                    opacity: 0
+                }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: "off"
+                to: "on"
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: imgShade 
+                        property: "scale"
+                        duration: 500
+                        easing.type: Easing.OutBack
+                    }
+                    NumberAnimation {
+                        target: faceBG 
+                        property: "scale"
+                        duration: 500
+                        easing.type: Easing.OutBack
+                    }
+                    NumberAnimation {
+                        target: usernameDelegate
+                        property: "opacity"
+                        duration: 500
+                        easing.type: Easing.InOutQuad
+                    }
+                }
+            },
+            Transition {
+                from: "on"
+                to: "off"
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: imgShade
+                        property: "scale"
+                        duration: 400
+                        easing.type: Easing.InBack
+                    }
+                    NumberAnimation {
+                        target: faceBG
+                        property: "scale"
+                        duration: 400
+                        easing.type: Easing.InBack
+                    }
+                    NumberAnimation {
+                        target: usernameDelegate
+                        property: "opacity"
+                        duration: 500
+                        easing.type: Easing.InOutQuad
+                    }
+                }
+            }
+        ]
     }
 
-    PlasmaComponents3.Label {
+    PlasmaComponents.Label {
         id: usernameDelegate
-        font.pointSize: wrapper.fontSize
+        font.pointSize: Math.max(fontSize + 2,theme.defaultFont.pointSize + 2)
         anchors {
             bottom: parent.bottom
             horizontalCenter: parent.horizontalCenter
         }
+        height: implicitHeight // work around stupid bug in Plasma Components that sets the height
         width: constrainText ? parent.width : implicitWidth
         text: wrapper.name
         style: softwareRendering ? Text.Outline : Text.Normal

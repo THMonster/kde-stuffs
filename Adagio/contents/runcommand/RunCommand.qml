@@ -19,7 +19,8 @@ import QtQuick 2.6
 import QtQuick.Layouts 1.1
 import QtQuick.Window 2.1
 import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.components 2.0 as PlasmaComponents
+import org.kde.plasma.components 2.0 as PlasmaComponents // For Highlight
+import org.kde.plasma.components 3.0 as PlasmaComponents3
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 import org.kde.milou 0.1 as Milou
 
@@ -28,6 +29,7 @@ ColumnLayout {
     property string query
     property string runner
     property bool showHistory: false
+    property string priorSearch
 
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
     LayoutMirroring.childrenInherit: true
@@ -42,9 +44,19 @@ ColumnLayout {
             if (runnerWindow.visible) {
                 queryField.forceActiveFocus();
                 listView.currentIndex = -1
+                if (runnerWindow.retainPriorSearch) {
+                    // If we manually specified a query(D-Bus invocation) we don't want to retain the prior search
+                    if (!query) {
+                        queryField.text = priorSearch
+                        queryField.select(root.query.length, 0)
+                    }
+                }
             } else {
-                root.query = "";
+                if (runnerWindow.retainPriorSearch) {
+                    priorSearch = root.query
+                }
                 root.runner = ""
+                root.query = ""
                 root.showHistory = false
             }
         }
@@ -52,8 +64,8 @@ ColumnLayout {
 
     RowLayout {
         Layout.alignment: Qt.AlignTop
-        PlasmaComponents.ToolButton {
-            iconSource: "configure"
+        PlasmaComponents3.ToolButton {
+            icon.name: "configure"
             onClicked: {
                 runnerWindow.visible = false
                 runnerWindow.displayConfiguration()
@@ -61,14 +73,17 @@ ColumnLayout {
             Accessible.name: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Configure")
             Accessible.description: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Configure Search Plugins")
             visible: runnerWindow.canConfigure
-            tooltip: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Configure KRunner...")
+            PlasmaComponents3.ToolTip {
+                text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Configure KRunner...")
+            }
         }
-        PlasmaComponents.TextField {
+        PlasmaComponents3.TextField {
             id: queryField
             property bool allowCompletion: false
 
             clearButtonShown: true
             Layout.minimumWidth: units.gridUnit * 25
+            Layout.maximumWidth: units.gridUnit * 25
 
             activeFocusOnPress: true
             placeholderText: results.runnerName ? i18ndc("plasma_lookandfeel_org.kde.lookandfeel",
@@ -77,6 +92,31 @@ ColumnLayout {
                                                 : i18ndc("plasma_lookandfeel_org.kde.lookandfeel",
                                                          "Textfield placeholder text", "Search...")
 
+            PlasmaComponents3.BusyIndicator {
+                anchors {
+                    right: parent.right
+                    top: parent.top
+                    bottom: parent.bottom
+                    margins: units.smallSpacing
+                    rightMargin: height
+                }
+
+                Timer {
+                    id: queryTimer
+                    property bool queryDisplay: false
+                    running: results.querying
+                    repeat: true
+                    onRunningChanged: if (queryDisplay && !running) {
+                        queryDisplay = false
+                    }
+                    onTriggered: if (!queryDisplay) {
+                        queryDisplay = true
+                    }
+                    interval: 500
+                }
+
+                running: queryTimer.queryDisplay
+            }
             function move_up() {
                 if (length === 0) {
                     root.showHistory = true;
@@ -152,7 +192,7 @@ ColumnLayout {
                     colorGroup: PlasmaCore.Theme.ButtonColorGroup
                 }
                 elementId: "down-arrow"
-                visible: queryField.length === 0
+                visible: queryField.length === 0 && runnerWindow.history.length > 0
 
                 MouseArea {
                     anchors.fill: parent
@@ -167,12 +207,16 @@ ColumnLayout {
                 }
             }
         }
-        PlasmaComponents.ToolButton {
-            iconSource: "window-close"
-            onClicked: runnerWindow.visible = false
+        PlasmaComponents3.ToolButton {
+            icon.name: "window-close"
+            onClicked: {
+                runnerWindow.visible = false
+            }
             Accessible.name: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Close")
             Accessible.description: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Close Search")
-            tooltip: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Close")
+            PlasmaComponents3.ToolTip {
+                text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Close")
+            }
         }
     }
 
@@ -195,7 +239,10 @@ ColumnLayout {
                 } else if (ctrl && event.key === Qt.Key_K) {
                     decrementCurrentIndex()
                 } else if (event.text !== "") {
-                    queryField.text += event.text;
+                    // This prevents unprintable control characters from being inserted
+                    if (!/[\x00-\x1F\x7F]/.test(event.text)) {
+                        queryField.text += event.text;
+                    }
                     queryField.focus = true;
                 }
             }
@@ -244,8 +291,8 @@ ColumnLayout {
                     currentIndex = 0;
                 }
             }
-            Keys.onReturnPressed: runCurrentIndex()
-            Keys.onEnterPressed: runCurrentIndex()
+            Keys.onReturnPressed: runCurrentIndex(event)
+            Keys.onEnterPressed: runCurrentIndex(event)
             
             Keys.onTabPressed: {
                 if (currentIndex == listView.count-1) {
@@ -276,9 +323,16 @@ ColumnLayout {
             Keys.onUpPressed: decrementCurrentIndex()
             Keys.onDownPressed: incrementCurrentIndex()
 
-            function runCurrentIndex() {
+            function runCurrentIndex(event) {
                 var entry = runnerWindow.history[currentIndex]
                 if (entry) {
+                    // If user presses Shift+Return to invoke an action, invoke the first runner action
+                    if (event && event.modifiers === Qt.ShiftModifier
+                            && currentItem.additionalActions && currentItem.additionalActions.length > 0) {
+                        runAction(0);
+                        return
+                    }
+
                     queryField.text = entry
                     queryField.forceActiveFocus();
                 }

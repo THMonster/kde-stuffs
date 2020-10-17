@@ -19,10 +19,10 @@
 
 import QtQuick 2.2
 import QtQuick.Layouts 1.2
-import QtQuick.Controls 1.1 as Controls
+import QtQuick.Controls 2.12 as QQC2
 
 import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.components 2.0 as PlasmaComponents
+import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.kcoreaddons 1.0 as KCoreAddons
 
 import "../components"
@@ -77,7 +77,7 @@ PlasmaCore.ColorScope {
         includeUnusedSessions: false
     }
 
-    Controls.Action {
+    QQC2.Action {
         onTriggered: root.cancelRequested()
         shortcut: "Escape"
     }
@@ -117,9 +117,8 @@ PlasmaCore.ColorScope {
         onClicked: root.cancelRequested()
     }
     UserDelegate {
-        width: units.iconSizes.enormous
+	width: units.gridUnit * 7
         height: width
-        nameFontSize: theme.defaultFont.pointSize + 2
         anchors {
             horizontalCenter: parent.horizontalCenter
             bottom: parent.verticalCenter
@@ -247,12 +246,14 @@ PlasmaCore.ColorScope {
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
             PlasmaComponents.Button {
+		implicitWidth: units.gridUnit * 6
                 font.pointSize: theme.defaultFont.pointSize + 1
                 enabled: root.currentAction !== null
                 text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "OK")
                 onClicked: root.currentAction()
             }
             PlasmaComponents.Button {
+		implicitWidth: units.gridUnit * 6
                 font.pointSize: theme.defaultFont.pointSize + 1
                 text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Cancel")
                 onClicked: root.cancelRequested()
